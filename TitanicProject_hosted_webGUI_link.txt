@@ -17,9 +17,7 @@ Model Persistence Method: Joblib
 
 
 DEPLOYMENT INFORMATION
-Live Application URL: https://wine-cultivar-prediction-ww6dfareapvpf7xwdtwnju.streamlit.app/
+Live Application URL: https://titanic-project-wfgm6podsfb3kptav2uptb.streamlit.app/
 
 
-GitHub Repository: https://github.com/Oyebanjo-ade/Wine-Cultivar-Prediction
-
-
+GitHub Repository: https://github.com/Oyebanjo-ade/Titanic-Project
