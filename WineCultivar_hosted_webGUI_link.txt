@@ -1,0 +1,32 @@
+Wine Cultivar Origin Prediction System
+Deployment Information
+
+
+STUDENT INFORMATION:
+
+Name: OYEBANJO ADEJOJU DEBORAH
+Matric Number:22CD032195
+
+
+PROJECT DETAILS:
+
+Machine Learning Algorithm Used: Random Forest Classifier
+
+Model Persistence Method: Joblib
+Number of Features: 6
+Selected Features: 
+  1. Alcohol
+  2. Malic Acid
+  3. Flavanoids
+  4. Color Intensity
+  5. Hue
+  6. Proline
+
+
+DEPLOYMENT INFORMATION
+Live Application URL: [Your deployed app URL]
+
+
+GitHub Repository: [Your GitHub repository URL]
+
+

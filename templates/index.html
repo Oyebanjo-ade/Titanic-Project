@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Cultivar Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #722F37;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #722F37;
+        }
+        
+        .btn-predict {
+            width: 100%;
+            padding: 15px;
+            background: #722F37;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn-predict:hover {
+            background: #5a2329;
+        }
+        
+        .result-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .prediction-result {
+            text-align: center;
+            padding: 30px;
+            background: #722F37;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .prediction-result h3 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .prediction-result p {
+            font-size: 1.2em;
+        }
+        
+        .probabilities {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .prob-card {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .prob-card h4 {
+            color: #722F37;
+            margin-bottom: 5px;
+        }
+        
+        .prob-card p {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .info-box h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .sample-values {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .sample-values h4 {
+            color: #f57c00;
+            margin-bottom: 10px;
+        }
+        
+        .sample-values ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .sample-values li {
+            padding: 5px 0;
+            color: #666;
+        }
+        
+        .error {
+            padding: 15px;
+            background: #ffebee;
+            color: #c62828;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .probabilities {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍷 Wine Cultivar Predictor</h1>
+            <p>Predict wine cultivar based on chemical properties</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="card">
+                <h2>Enter Wine Chemical Properties</h2>
+                <form method="POST" action="/predict">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="alcohol">Alcohol (%)</label>
+                            <input type="number" step="0.1" id="alcohol" name="alcohol" 
+                                   value="{{ input_data.alcohol if input_data else '13.0' }}" 
+                                   min="11.0" max="15.0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="malic_acid">Malic Acid (g/L)</label>
+                            <input type="number" step="0.1" id="malic_acid" name="malic_acid" 
+                                   value="{{ input_data.malic_acid if input_data else '2.5' }}" 
+                                   min="0.5" max="6.0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="flavanoids">Flavanoids (g/L)</label>
+                            <input type="number" step="0.1" id="flavanoids" name="flavanoids" 
+                                   value="{{ input_data.flavanoids if input_data else '2.0' }}" 
+                                   min="0.3" max="5.5" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="color_intensity">Color Intensity</label>
+                            <input type="number" step="0.1" id="color_intensity" name="color_intensity" 
+                                   value="{{ input_data.color_intensity if input_data else '5.0' }}" 
+                                   min="1.0" max="13.0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="hue">Hue</label>
+                            <input type="number" step="0.01" id="hue" name="hue" 
+                                   value="{{ input_data.hue if input_data else '1.0' }}" 
+                                   min="0.4" max="1.7" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="proline">Proline (mg/L)</label>
+                            <input type="number" step="1" id="proline" name="proline" 
+                                   value="{{ input_data.proline if input_data else '750' }}" 
+                                   min="250" max="1700" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-predict">🔮 Predict Cultivar</button>
+                </form>
+                
+                {% if result %}
+                <div class="result-section">
+                    <div class="prediction-result">
+                        <h3>Cultivar {{ result.prediction }}</h3>
+                        <p>Confidence: {{ "%.2f"|format(result.confidence) }}%</p>
+                    </div>
+                    
+                    <h3 style="margin-bottom: 15px;">Probability Distribution</h3>
+                    <div class="probabilities">
+                        <div class="prob-card">
+                            <h4>Cultivar 0</h4>
+                            <p>{{ "%.2f"|format(result.probabilities.cultivar_0) }}%</p>
+                        </div>
+                        <div class="prob-card">
+                            <h4>Cultivar 1</h4>
+                            <p>{{ "%.2f"|format(result.probabilities.cultivar_1) }}%</p>
+                        </div>
+                        <div class="prob-card">
+                            <h4>Cultivar 2</h4>
+                            <p>{{ "%.2f"|format(result.probabilities.cultivar_2) }}%</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if error %}
+                <div class="error">
+                    {{ error }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div>
+                <div class="card">
+                    <h2>ℹ️ About</h2>
+                    <div class="info-box">
+                        <h3>Model Information</h3>
+                        <ul>
+                            <li><strong>Algorithm:</strong> Random Forest</li>
+                            <li><strong>Features:</strong> 6 properties</li>
+                            <li><strong>Classes:</strong> 3 cultivars</li>
+                        </ul>
+                    </div>
+                    
+                    <h3 style="margin-bottom: 10px;">Sample Values</h3>
+                    
+                    <div class="sample-values">
+                        <h4>Cultivar 0</h4>
+                        <ul>
+                            <li>Alcohol: 14.2%</li>
+                            <li>Malic Acid: 1.7 g/L</li>
+                            <li>Flavanoids: 3.0 g/L</li>
+                            <li>Color Intensity: 4.5</li>
+                            <li>Hue: 1.0</li>
+                            <li>Proline: 1065 mg/L</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sample-values">
+                        <h4>Cultivar 1</h4>
+                        <ul>
+                            <li>Alcohol: 12.5%</li>
+                            <li>Malic Acid: 2.5 g/L</li>
+                            <li>Flavanoids: 1.8 g/L</li>
+                            <li>Color Intensity: 5.5</li>
+                            <li>Hue: 0.8</li>
+                            <li>Proline: 625 mg/L</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sample-values">
+                        <h4>Cultivar 2</h4>
+                        <ul>
+                            <li>Alcohol: 13.2%</li>
+                            <li>Malic Acid: 3.2 g/L</li>
+                            <li>Flavanoids: 1.2 g/L</li>
+                            <li>Color Intensity: 7.5</li>
+                            <li>Hue: 0.6</li>
+                            <li>Proline: 520 mg/L</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
