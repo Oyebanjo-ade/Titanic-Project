@@ -1,7 +1,8 @@
-flask
+streamlit
 numpy
 pandas
 scikit-learn
 joblib
+
 
 
